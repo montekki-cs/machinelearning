@@ -18,6 +18,15 @@ p = zeros(m, 1);
 
 
 
+tmpvec = sigmoid(X * theta);
+
+for i = (1:size(tmpvec))
+	if tmpvec(i) >= 0.5
+	p(i) = 1;
+	else
+	p(i) = 0;
+	endif
+endfor
 
 
 
