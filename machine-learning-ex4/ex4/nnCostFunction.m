@@ -62,12 +62,50 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+A_1 = [ones(m, 1) X];
+Z_2 = A_1*Theta1';
+A_2 = sigmoid(Z_2);
+A_2 = [ones(size(A_2, 1), 1) A_2];
+Z_3 = A_2 * Theta2';
+A_3 = sigmoid(Z_3);
+
+% Turn y to num_labels dimensional vectors
+A = eye(num_labels);
+Y = zeros(size(y, 1), num_labels);
+for i = (1:size(y, 1))
+	Y(i, :) = A(y(i), :);
+endfor
+
+h_theta_x = A_3;
+
+J = (1/m)*sum(sum((-Y) .* log(h_theta_x), 2) - sum((1 - Y) .* log(1 - h_theta_x), 2));
+
+TT1 = Theta1;
+TT2 = Theta2;
+TT1(:,1) = [];
+TT2(:,1) = [];
+
+J = J + (lambda/(2*m))*(sum(sum(TT1 .* TT1)) + sum(sum(TT2 .* TT2)));
+
+for t = 1:m
+	a_1 = [1 X(t, :)];
+	z_2 = a_1 * Theta1';
+	a_2 = sigmoid(z_2);
+	a_2 = [1 a_2];
+	z_3 = a_2 * Theta2';
+	a_3 = sigmoid(z_3);
+	delta_3 = a_3 - Y(t, :);
+	delta_2 = (Theta2' * delta_3');
+	delta_2 = delta_2(2:end);
+	delta_2 = delta_2' .* sigmoidGradient(z_2);
+
+	Theta2_grad = Theta2_grad + delta_3' * a_2;
+	Theta1_grad = Theta1_grad + delta_2' * a_1;
+endfor
 
 
-
-
-
-
+Theta2_grad = (1/m).*Theta2_grad + (lambda/m) .* Theta2;
+Theta1_grad = (1/m).*Theta1_grad + (lambda/m) .* Theta1;
 
 
 
